@@ -124,13 +124,14 @@ def recursive_print(input):
     except KeyError as e:
         pass
 
+def extract(parser):
+    data = get_stream_data(
+        find_gpmd_stbl_atom(parser)
+    )
+    return data
 
 if __name__ == '__main__':
     import sys
     parser = hachoir.parser.createParser(sys.argv[1])
     with open(sys.argv[2], 'wb') as fp:
-        fp.write(
-            get_stream_data(
-                find_gpmd_stbl_atom(parser)
-            )
-        )
+        fp.write(extract(parser))
