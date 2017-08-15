@@ -25,7 +25,6 @@ def locate_fields_by_subpath(parser, subpath):
         return retlist
     return recursive_search(parser)
 
-
 def locate_creation_date_fields(parser):
     return locate_fields_by_subpath(parser, 'creation_date')
 
@@ -52,12 +51,30 @@ def test_timestamp(incoming):
         print(incoming)
         print(cd.value)
 
-def make_edit(folder):
-    for file in glob.glob(folder + "*.MP4"):
-        change_timestamp(file, "./vids_new/" + file[7:-4] + "_new.MP4")
+def processed_files(folder):
+    filelist = []
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            filelist.append(file)
+    return filelist
 
+def test_edit(folder, folder_new):
     for file in glob.glob(folder + "*.MP4"):
-        os.remove(file)
+        change_timestamp(file, folder_new + file[7:-4] + "_new.MP4")
+
+def make_edit(folder, folder_new):
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            if file.endswith(".MP4"):
+                print(os.path.join(root,file))
+                print("{parent}processed{child}".format(parent=root[:25], child=os.path.join(root, file)[34:]))
+                if file not in processed_files(folder_new):
+                    change_timestamp(
+                        os.path.join(root,file),
+                        "{parent}processed{child}".format(
+                            parent=root[:25], child=os.path.join(root,file)[34:]
+                        )
+                    )
 
 def make_test(folder):
     for file in glob.glob(folder + "*.MP4"):
@@ -65,7 +82,15 @@ def make_test(folder):
 
 if __name__ == '__main__':
     import sys
-    folder = "./vids/"
-    folder_new = "./vids_new/"
-    make_edit(folder)
-    # make_test(folder_new)
+    folder = "/media/aarni/My Passport/rr_videos"
+    folder_new = "/media/aarni/My Passport/processed"
+
+    # make_edit(folder, folder_new)
+    # test_edit("./vids/", "./vids_new/")
+    make_test("./vids_new/")
+    make_test("./vids/")
+    # print([i for i in os.listdir(folder) if i.endswith(".MP4")])
+
+
+
+
